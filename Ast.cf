@@ -1,0 +1,89 @@
+entrypoints Prog;
+
+Int.		Type ::= "int" ;
+Bool.		Type ::= "bool" ;
+Double.		Type ::= "double" ;
+Void.		Type ::= "void" ;
+
+
+[].		[Ident] ::= ;
+(:[]).		[Ident] ::= Ident ;
+(:).		[Ident] ::= Ident "," [Ident] ;
+
+[].		[Func] ::= ;
+(:[]).		[Func] ::= Func ;
+(:).		[Func] ::= Func [Func] ;
+
+[].		[Instr] ::= ;
+(:[]).		[Instr] ::= Instr ;
+(:).		[Instr] ::= Instr [Instr] ;
+
+[].		[Arg] ::= ;
+(:[]).		[Arg] ::= Arg ;
+(:).		[Arg] ::= Arg "," [Arg] ;
+ArgDecl.	Arg ::= Ident ":" Type ; 
+
+[].		[Exp] ::= ;
+(:[]).		[Exp] ::= Exp ;
+(:).		[Exp] ::= Exp "," [Exp] ;
+
+Entry.		Prog ::= [Func] ;
+
+FuncDecl.	Func ::= Type Ident "(" [Arg] ")" Instr;
+
+IBlock.		Instr ::= "{" [Instr] "}";
+
+IDeclSt.	Instr ::= Type Ident "=" Exp ";" ;
+IDecl.		Instr ::= Type [Ident] ";" ;
+IRet.		Instr ::= "return" Exp ";" ;
+IRetEmpty.	Instr ::= "return" ";" ;
+IExp.		Instr ::= Exp ";" ;
+
+
+IIf.		Instr ::= "if" "(" Exp ")" Instr;
+IIfElse.	Instr ::= "if" "(" Exp ")" Instr "else" Instr;
+
+IWhile.		Instr ::= "while" "(" Exp ")" Instr;
+
+
+EVarSet.	Exp ::= Ident "=" Exp ;
+EOr.		Exp1 ::= Exp1 "||" Exp2 ;
+EAnd.		Exp2 ::= Exp2 "&&" Exp3 ;
+EEq.		Exp3 ::= Exp3 "==" Exp4 ;
+ENEq.		Exp3 ::= Exp3 "!=" Exp4 ;
+ESm.		Exp4 ::= Exp4 "<" Exp5 ;
+EGr.		Exp4 ::= Exp4 ">" Exp5 ;
+EESm.		Exp4 ::= Exp4 "<=" Exp5 ;
+EEGr.		Exp4 ::= Exp4 ">=" Exp5 ;
+EAdd.	  	Exp5 ::= Exp5 "+" Exp6 ;
+ESub.	  	Exp5 ::= Exp5 "-" Exp6 ;
+EMul.	 	Exp6 ::= Exp6 "*" Exp7 ;
+EDiv.	 	Exp6 ::= Exp6 "/" Exp7 ;
+EMod.	 	Exp6 ::= Exp6 "%" Exp7 ;
+ENot.		Exp7 ::= "!" Exp7 ;
+EPlus.		Exp7 ::= "+" Exp7 ;
+EMinus.		Exp7 ::= "-" Exp7 ;
+
+_.		Exp7 ::= "(" Exp ")" ;
+EVar.           Exp7 ::= Ident ;
+ECall.		Exp7 ::= Ident "(" [Exp] ")" ;
+EDouble.   	Exp7 ::= Double ;
+EInt.   	Exp7 ::= Integer ;
+ETrue.          Exp7 ::= "true" ;
+EFalse.         Exp7 ::= "false" ;
+EStr.   	Exp7 ::= String ;
+EToInt.         Exp7 ::= "(" "int" ")" Exp7 ;
+ 
+
+
+_. 		Exp6 ::= Exp7 ;
+_. 		Exp5 ::= Exp6 ;
+_. 		Exp4 ::= Exp5 ;
+_. 		Exp3 ::= Exp4 ;
+_. 		Exp2 ::= Exp3 ;
+_.		Exp1 ::= Exp2 ;
+_. 		Exp  ::= Exp1 ;
+
+
+comment "/*" "*/";
+comment "//";
