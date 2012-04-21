@@ -26,6 +26,7 @@ function run {
 
 if [ "$1" == "" ]; then
   rm -rf out/*
+  mkdir out
   mkdir out/mixed
   mkdir out/assignexp
   find examples -iname *.jl -print | 
