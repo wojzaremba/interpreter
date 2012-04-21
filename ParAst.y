@@ -13,6 +13,8 @@ import ErrM
 %tokentype { Token }
 
 %token 
+ '[' { PT _ (TS "[") }
+ ']' { PT _ (TS "]") }
  ',' { PT _ (TS ",") }
  '(' { PT _ (TS "(") }
  ')' { PT _ (TS ")") }
@@ -40,6 +42,7 @@ import ErrM
  'double' { PT _ (TS "double") }
  'else' { PT _ (TS "else") }
  'false' { PT _ (TS "false") }
+ 'for' { PT _ (TS "for") }
  'if' { PT _ (TS "if") }
  'int' { PT _ (TS "int") }
  'return' { PT _ (TS "return") }
@@ -66,6 +69,18 @@ Type : 'int' { Int }
   | 'boolean' { Boolean }
   | 'double' { Double }
   | 'void' { Void }
+  | Type ListPos { Table $1 $2 }
+
+
+ListPos :: { [Pos] }
+ListPos : {- empty -} { [] } 
+  | Pos { (:[]) $1 }
+  | Pos ListPos { (:) $1 $2 }
+
+
+Pos :: { Pos }
+Pos : '[' Exp ']' { PosF $2 } 
+  | '[' ']' { PosE }
 
 
 ListIdentExp :: { [IdentExp] }
@@ -119,6 +134,7 @@ Instr : '{' ListInstr '}' { IBlock $2 }
   | 'if' '(' Exp ')' Instr { IIf $3 $5 }
   | 'if' '(' Exp ')' Instr 'else' Instr { IIfElse $3 $5 $7 }
   | 'while' '(' Exp ')' Instr { IWhile $3 $5 }
+  | 'for' '(' Instr Exp ';' Exp ')' Instr { IFor $3 $4 $6 $8 }
 
 
 IdentExp :: { IdentExp }
@@ -128,6 +144,7 @@ IdentExp : Ident { IdentEmpty $1 }
 
 Exp :: { Exp }
 Exp : Ident '=' Exp { EVarSet $1 $3 } 
+  | Ident ListPos '=' Exp { EVarSetTable $1 $2 $4 }
   | Exp1 { $1 }
 
 
@@ -177,6 +194,7 @@ Exp7 : '!' Exp7 { ENot $2 }
   | '++' Exp7 { EPrePlus $2 }
   | '--' Exp7 { EPreMinus $2 }
   | '(' Exp ')' { $2 }
+  | Ident ListPos { EVarPos $1 $2 }
   | Ident { EVar $1 }
   | Ident '(' ListExp ')' { ECall $1 $3 }
   | Double { EDouble $1 }
@@ -185,6 +203,8 @@ Exp7 : '!' Exp7 { ENot $2 }
   | 'false' { EFalse }
   | String { EStr $1 }
   | '(' 'int' ')' Exp7 { EToInt $4 }
+  | '(' 'boolean' ')' Exp7 { EToBool $4 }
+  | '(' 'double' ')' Exp7 { EToDouble $4 }
 
 
 

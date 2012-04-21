@@ -1,0 +1,8 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("i",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "i") (EInt 3)],IDecl (Table Int [PosF (EInt 7),PosF (EMul (EVar (Ident "i")) (EInt 5)),PosF (EMul (EPrePlus (EVar (Ident "i"))) (EInt 2))]) [IdentEmpty (Ident "a")],IExp (EVarSetTable (Ident "a") [PosF (EVar (Ident "i")),PosF (EAdd (EVar (Ident "i")) (EInt 1)),PosF (EPostMinus (EVar (Ident "i")))] (EVar (Ident "i"))),IExp (ECall (Ident "printInt") [EVarPos (Ident "a") [PosF (EInt 4),PosF (EInt 5),PosF (EInt 4)]]),IRet (EInt 0)]))]) 2 (fromList [(1,ValueInt 3),(2,ValueTable Int 840 (fromList [(80,ValueInt 3)]) 2)]) ["3\n"]
+
+output:
+3

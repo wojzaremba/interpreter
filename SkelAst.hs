@@ -20,6 +20,13 @@ transType x = case x of
   Boolean  -> failure x
   Double  -> failure x
   Void  -> failure x
+  Table type' poss  -> failure x
+
+
+transPos :: Pos -> Result
+transPos x = case x of
+  PosF exp  -> failure x
+  PosE  -> failure x
 
 
 transArg :: Arg -> Result
@@ -47,6 +54,7 @@ transInstr x = case x of
   IIf exp instr  -> failure x
   IIfElse exp instr0 instr  -> failure x
   IWhile exp instr  -> failure x
+  IFor instr0 exp1 exp instr  -> failure x
 
 
 transIdentExp :: IdentExp -> Result
@@ -58,6 +66,7 @@ transIdentExp x = case x of
 transExp :: Exp -> Result
 transExp x = case x of
   EVarSet id exp  -> failure x
+  EVarSetTable id poss exp  -> failure x
   EOr exp0 exp  -> failure x
   EAnd exp0 exp  -> failure x
   EEq exp0 exp  -> failure x
@@ -78,6 +87,7 @@ transExp x = case x of
   EPostMinus exp  -> failure x
   EPrePlus exp  -> failure x
   EPreMinus exp  -> failure x
+  EVarPos id poss  -> failure x
   EVar id  -> failure x
   ECall id exps  -> failure x
   EDouble d  -> failure x
@@ -86,6 +96,8 @@ transExp x = case x of
   EFalse  -> failure x
   EStr str  -> failure x
   EToInt exp  -> failure x
+  EToBool exp  -> failure x
+  EToDouble exp  -> failure x
 
 
 

@@ -87,7 +87,18 @@ instance Print Type where
    Boolean  -> prPrec i 0 (concatD [doc (showString "boolean")])
    Double  -> prPrec i 0 (concatD [doc (showString "double")])
    Void  -> prPrec i 0 (concatD [doc (showString "void")])
+   Table type' poss -> prPrec i 0 (concatD [prt 0 type' , prt 0 poss])
 
+
+instance Print Pos where
+  prt i e = case e of
+   PosF exp -> prPrec i 0 (concatD [doc (showString "[") , prt 0 exp , doc (showString "]")])
+   PosE  -> prPrec i 0 (concatD [doc (showString "[") , doc (showString "]")])
+
+  prtList es = case es of
+   [] -> (concatD [])
+   [x] -> (concatD [prt 0 x])
+   x:xs -> (concatD [prt 0 x , prt 0 xs])
 
 instance Print Arg where
   prt i e = case e of
@@ -122,6 +133,7 @@ instance Print Instr where
    IIf exp instr -> prPrec i 0 (concatD [doc (showString "if") , doc (showString "(") , prt 0 exp , doc (showString ")") , prt 0 instr])
    IIfElse exp instr0 instr -> prPrec i 0 (concatD [doc (showString "if") , doc (showString "(") , prt 0 exp , doc (showString ")") , prt 0 instr0 , doc (showString "else") , prt 0 instr])
    IWhile exp instr -> prPrec i 0 (concatD [doc (showString "while") , doc (showString "(") , prt 0 exp , doc (showString ")") , prt 0 instr])
+   IFor instr0 exp1 exp instr -> prPrec i 0 (concatD [doc (showString "for") , doc (showString "(") , prt 0 instr0 , prt 0 exp1 , doc (showString ";") , prt 0 exp , doc (showString ")") , prt 0 instr])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -141,6 +153,7 @@ instance Print IdentExp where
 instance Print Exp where
   prt i e = case e of
    EVarSet id exp -> prPrec i 0 (concatD [prt 0 id , doc (showString "=") , prt 0 exp])
+   EVarSetTable id poss exp -> prPrec i 0 (concatD [prt 0 id , prt 0 poss , doc (showString "=") , prt 0 exp])
    EOr exp0 exp -> prPrec i 1 (concatD [prt 1 exp0 , doc (showString "||") , prt 2 exp])
    EAnd exp0 exp -> prPrec i 2 (concatD [prt 2 exp0 , doc (showString "&&") , prt 3 exp])
    EEq exp0 exp -> prPrec i 3 (concatD [prt 3 exp0 , doc (showString "==") , prt 4 exp])
@@ -161,6 +174,7 @@ instance Print Exp where
    EPostMinus exp -> prPrec i 7 (concatD [prt 7 exp , doc (showString "--")])
    EPrePlus exp -> prPrec i 7 (concatD [doc (showString "++") , prt 7 exp])
    EPreMinus exp -> prPrec i 7 (concatD [doc (showString "--") , prt 7 exp])
+   EVarPos id poss -> prPrec i 7 (concatD [prt 0 id , prt 0 poss])
    EVar id -> prPrec i 7 (concatD [prt 0 id])
    ECall id exps -> prPrec i 7 (concatD [prt 0 id , doc (showString "(") , prt 0 exps , doc (showString ")")])
    EDouble d -> prPrec i 7 (concatD [prt 0 d])
@@ -169,6 +183,8 @@ instance Print Exp where
    EFalse  -> prPrec i 7 (concatD [doc (showString "false")])
    EStr str -> prPrec i 7 (concatD [prt 0 str])
    EToInt exp -> prPrec i 7 (concatD [doc (showString "(") , doc (showString "int") , doc (showString ")") , prt 7 exp])
+   EToBool exp -> prPrec i 7 (concatD [doc (showString "(") , doc (showString "boolean") , doc (showString ")") , prt 7 exp])
+   EToDouble exp -> prPrec i 7 (concatD [doc (showString "(") , doc (showString "double") , doc (showString ")") , prt 7 exp])
 
   prtList es = case es of
    [] -> (concatD [])

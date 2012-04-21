@@ -1,0 +1,8 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("b",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Double [IdentExp (Ident "b") (EToDouble (EInt 1))],IExp (ECall (Ident "printDouble") [EAdd (EVar (Ident "b")) (EDouble 5.0)]),IRet (EInt 0)]))]) 1 (fromList [(1,ValueDouble 1.0)]) ["6.0\n"]
+
+output:
+6.0

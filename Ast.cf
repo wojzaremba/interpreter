@@ -4,7 +4,15 @@ Int.		Type ::= "int" ;
 Boolean.	Type ::= "boolean" ;
 Double.		Type ::= "double" ;
 Void.		Type ::= "void" ;
+Table.          Type ::= Type [Pos];
 
+
+[].		[Pos] ::= ;
+(:[]).		[Pos] ::= Pos ;
+(:).		[Pos] ::= Pos [Pos] ;
+
+PosF.           Pos ::= "[" Exp "]";
+PosE.           Pos ::= "[" "]";
 
 [].		[IdentExp] ::= ;
 (:[]).		[IdentExp] ::= IdentExp ;
@@ -46,9 +54,11 @@ IIf.		Instr ::= "if" "(" Exp ")" Instr;
 IIfElse.	Instr ::= "if" "(" Exp ")" Instr "else" Instr;
 
 IWhile.		Instr ::= "while" "(" Exp ")" Instr;
+IFor.		Instr ::= "for" "(" Instr Exp ";" Exp ")" Instr;
 
 
 EVarSet.	Exp ::= Ident "=" Exp ;
+EVarSetTable.	Exp ::= Ident [Pos] "=" Exp ;
 EOr.		Exp1 ::= Exp1 "||" Exp2 ;
 EAnd.		Exp2 ::= Exp2 "&&" Exp3 ;
 EEq.		Exp3 ::= Exp3 "==" Exp4 ;
@@ -71,6 +81,7 @@ EPrePlus.	Exp7 ::= "++" Exp7 ;
 EPreMinus.	Exp7 ::= "--" Exp7 ;
 
 _.		Exp7 ::= "(" Exp ")" ;
+EVarPos.        Exp7 ::= Ident [Pos];
 EVar.           Exp7 ::= Ident ;
 ECall.		Exp7 ::= Ident "(" [Exp] ")" ;
 EDouble.   	Exp7 ::= Double ;
@@ -79,6 +90,8 @@ ETrue.          Exp7 ::= "true" ;
 EFalse.         Exp7 ::= "false" ;
 EStr.   	Exp7 ::= String ;
 EToInt.         Exp7 ::= "(" "int" ")" Exp7 ;
+EToBool.        Exp7 ::= "(" "boolean" ")" Exp7 ;
+EToDouble.      Exp7 ::= "(" "double" ")" Exp7 ;
  
 
 

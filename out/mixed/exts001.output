@@ -1,0 +1,12 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("b",[]),("i",[])]) (fromList [("getArrayLength",FuncDecl Int (Ident "getArrayLength") [] (IBlock [IRet (EInt 5)])),("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl (Table Int [PosF (EInt 5)]) [IdentEmpty (Ident "b")],IDecl (Table Int [PosF (ECall (Ident "getArrayLength") [])]) [IdentEmpty (Ident "a")],IDecl Int [IdentEmpty (Ident "i")],IFor (IExp (EVarSet (Ident "i") (EInt 0))) (ESm (EVar (Ident "i")) (ECall (Ident "getArrayLength") [])) (EVarSet (Ident "i") (EAdd (EVar (Ident "i")) (EInt 1))) (IBlock [IExp (EVarSetTable (Ident "a") [PosF (EVar (Ident "i"))] (EVar (Ident "i"))),IExp (EVarSetTable (Ident "b") [PosF (EVar (Ident "i"))] (ESub (ECall (Ident "getArrayLength") []) (EVar (Ident "i"))))]),IFor (IDecl Int [IdentExp (Ident "i") (EInt 0)]) (ESm (EVar (Ident "i")) (EInt 5)) (EPostPlus (EVar (Ident "i"))) (IBlock [IExp (ECall (Ident "printInt") [EMul (EVarPos (Ident "a") [PosF (EVar (Ident "i"))]) (EVarPos (Ident "b") [PosF (EVar (Ident "i"))])])]),IRet (EInt 0)]))]) 4 (fromList [(1,ValueTable Int 5 (fromList [(0,ValueInt 5),(1,ValueInt 4),(2,ValueInt 3),(3,ValueInt 2),(4,ValueInt 1)]) 1),(2,ValueTable Int 5 (fromList [(0,ValueInt 0),(1,ValueInt 1),(2,ValueInt 2),(3,ValueInt 3),(4,ValueInt 4)]) 2),(3,ValueInt 5),(4,ValueInt 5)]) ["4\n","6\n","6\n","4\n","0\n"]
+
+output:
+0
+4
+6
+6
+4

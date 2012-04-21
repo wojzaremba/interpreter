@@ -8,6 +8,12 @@ data Type =
  | Boolean
  | Double
  | Void
+ | Table Type [Pos]
+  deriving (Eq,Ord,Show)
+
+data Pos =
+   PosF Exp
+ | PosE
   deriving (Eq,Ord,Show)
 
 data Arg =
@@ -31,6 +37,7 @@ data Instr =
  | IIf Exp Instr
  | IIfElse Exp Instr Instr
  | IWhile Exp Instr
+ | IFor Instr Exp Exp Instr
   deriving (Eq,Ord,Show)
 
 data IdentExp =
@@ -40,6 +47,7 @@ data IdentExp =
 
 data Exp =
    EVarSet Ident Exp
+ | EVarSetTable Ident [Pos] Exp
  | EOr Exp Exp
  | EAnd Exp Exp
  | EEq Exp Exp
@@ -60,6 +68,7 @@ data Exp =
  | EPostMinus Exp
  | EPrePlus Exp
  | EPreMinus Exp
+ | EVarPos Ident [Pos]
  | EVar Ident
  | ECall Ident [Exp]
  | EDouble Double
@@ -68,5 +77,7 @@ data Exp =
  | EFalse
  | EStr String
  | EToInt Exp
+ | EToBool Exp
+ | EToDouble Exp
   deriving (Eq,Ord,Show)
 

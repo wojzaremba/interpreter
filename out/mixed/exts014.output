@@ -1,0 +1,9 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("b",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "a") (EInt 10)],IDecl Int [IdentEmpty (Ident "b")],IExp (EVarSet (Ident "b") (EAdd (EPostPlus (EVar (Ident "a"))) (EInt 3))),IExp (ECall (Ident "printInt") [EVar (Ident "a")]),IExp (ECall (Ident "printInt") [EVar (Ident "b")]),IRet (EInt 0)]))]) 2 (fromList [(1,ValueInt 11),(2,ValueInt 13)]) ["13\n","11\n"]
+
+output:
+11
+13

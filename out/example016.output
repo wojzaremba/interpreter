@@ -1,0 +1,7 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("x_dfhj23478_89347___89aa__",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "x_dfhj23478_89347___89aa__") (EInt 1)],IRet (EInt 0)]))]) 1 (fromList [(1,ValueInt 1)]) []
+
+output:

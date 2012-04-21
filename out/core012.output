@@ -1,0 +1,14 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("w",[]),("x",[]),("y",[]),("z",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "x") (EInt 56)],IDecl Int [IdentExp (Ident "y") (EMinus (EInt 23))],IExp (ECall (Ident "printInt") [EAdd (EVar (Ident "x")) (EVar (Ident "y"))]),IExp (ECall (Ident "printInt") [ESub (EVar (Ident "x")) (EVar (Ident "y"))]),IExp (ECall (Ident "printInt") [EMul (EVar (Ident "x")) (EVar (Ident "y"))]),IExp (ECall (Ident "printInt") [EDiv (EInt 45) (EInt 2)]),IExp (ECall (Ident "printInt") [EMod (EInt 78) (EInt 3)]),IDecl Double [IdentExp (Ident "z") (EMinus (EDouble 9.3))],IDecl Double [IdentExp (Ident "w") (EDouble 5.1)],IExp (ECall (Ident "printBool") [EGr (EAdd (EVar (Ident "z")) (EVar (Ident "w"))) (ESub (EVar (Ident "z")) (EVar (Ident "w")))]),IExp (ECall (Ident "printBool") [EESm (EDiv (EVar (Ident "z")) (EVar (Ident "w"))) (EMul (EVar (Ident "z")) (EVar (Ident "w")))]),IRet (EInt 0)])),("printBool",FuncDecl Void (Ident "printBool") [ArgDecl Boolean (Ident "b")] (IBlock [IIfElse (EVar (Ident "b")) (IBlock [IExp (ECall (Ident "printString") [EStr "true"]),IRetEmpty]) (IBlock [IExp (ECall (Ident "printString") [EStr "false"]),IRetEmpty])]))]) 4 (fromList [(1,ValueInt 56),(2,ValueInt (-23)),(3,ValueDouble (-9.3)),(4,ValueDouble 5.1)]) ["false\n","true\n","0\n","22\n","-1288\n","79\n","33\n"]
+
+output:
+33
+79
+-1288
+22
+0
+true
+false

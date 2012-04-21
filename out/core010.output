@@ -1,0 +1,8 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("n",[]),("r",[])]) (fromList [("fac",FuncDecl Int (Ident "fac") [ArgDecl Int (Ident "a")] (IBlock [IDecl Int [IdentEmpty (Ident "r")],IDecl Int [IdentEmpty (Ident "n")],IExp (EVarSet (Ident "r") (EInt 1)),IExp (EVarSet (Ident "n") (EVar (Ident "a"))),IWhile (EGr (EVar (Ident "n")) (EInt 0)) (IBlock [IExp (EVarSet (Ident "r") (EMul (EVar (Ident "r")) (EVar (Ident "n")))),IExp (EVarSet (Ident "n") (ESub (EVar (Ident "n")) (EInt 1)))]),IRet (EVar (Ident "r"))])),("main",FuncDecl Int (Ident "main") [] (IBlock [IExp (ECall (Ident "printInt") [ECall (Ident "fac") [EInt 5]]),IRet (EInt 0)]))]) 3 (fromList [(1,ValueInt 5),(2,ValueInt 120),(3,ValueInt 0)]) ["120\n"]
+
+output:
+120

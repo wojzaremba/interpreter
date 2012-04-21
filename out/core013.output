@@ -1,0 +1,32 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("i",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IExp (ECall (Ident "printString") [EStr "&&"]),IExp (ECall (Ident "printBool") [EAnd (ECall (Ident "test") [EMinus (EInt 1)]) (ECall (Ident "test") [EInt 0])]),IExp (ECall (Ident "printBool") [EAnd (ECall (Ident "test") [EMinus (EInt 2)]) (ECall (Ident "test") [EInt 1])]),IExp (ECall (Ident "printBool") [EAnd (ECall (Ident "test") [EInt 3]) (ECall (Ident "test") [EMinus (EInt 5)])]),IExp (ECall (Ident "printBool") [EAnd (ECall (Ident "test") [EInt 234234]) (ECall (Ident "test") [EInt 21321])]),IExp (ECall (Ident "printString") [EStr "||"]),IExp (ECall (Ident "printBool") [EOr (ECall (Ident "test") [EMinus (EInt 1)]) (ECall (Ident "test") [EInt 0])]),IExp (ECall (Ident "printBool") [EOr (ECall (Ident "test") [EMinus (EInt 2)]) (ECall (Ident "test") [EInt 1])]),IExp (ECall (Ident "printBool") [EOr (ECall (Ident "test") [EInt 3]) (ECall (Ident "test") [EMinus (EInt 5)])]),IExp (ECall (Ident "printBool") [EOr (ECall (Ident "test") [EInt 234234]) (ECall (Ident "test") [EInt 21321])]),IExp (ECall (Ident "printString") [EStr "!"]),IExp (ECall (Ident "printBool") [ETrue]),IExp (ECall (Ident "printBool") [EFalse]),IRet (EInt 0)])),("printBool",FuncDecl Void (Ident "printBool") [ArgDecl Boolean (Ident "b")] (IBlock [IIfElse (ENot (EVar (Ident "b"))) (IBlock [IExp (ECall (Ident "printString") [EStr "false"])]) (IBlock [IExp (ECall (Ident "printString") [EStr "true"])]),IRetEmpty])),("test",FuncDecl Boolean (Ident "test") [ArgDecl Int (Ident "i")] (IBlock [IExp (ECall (Ident "printInt") [EVar (Ident "i")]),IRet (EGr (EVar (Ident "i")) (EInt 0))]))]) 12 (fromList [(1,ValueInt (-1)),(2,ValueInt (-2)),(3,ValueInt 3),(4,ValueInt (-5)),(5,ValueInt 234234),(6,ValueInt 21321),(7,ValueInt (-1)),(8,ValueInt 0),(9,ValueInt (-2)),(10,ValueInt 1),(11,ValueInt 3),(12,ValueInt 234234)]) ["false\n","true\n","!\n","true\n","234234\n","true\n","3\n","true\n","1\n","-2\n","false\n","0\n","-1\n","||\n","true\n","21321\n","234234\n","false\n","-5\n","3\n","false\n","-2\n","false\n","-1\n","&&\n"]
+
+output:
+&&
+-1
+false
+-2
+false
+3
+-5
+false
+234234
+21321
+true
+||
+-1
+0
+false
+-2
+1
+true
+3
+true
+234234
+true
+!
+true
+false

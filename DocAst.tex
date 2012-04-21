@@ -52,22 +52,23 @@ The reserved words used in Ast are the following: \\
 
 \begin{tabular}{lll}
 {\reserved{boolean}} &{\reserved{double}} &{\reserved{else}} \\
-{\reserved{false}} &{\reserved{if}} &{\reserved{int}} \\
-{\reserved{return}} &{\reserved{true}} &{\reserved{void}} \\
-{\reserved{while}} & & \\
+{\reserved{false}} &{\reserved{for}} &{\reserved{if}} \\
+{\reserved{int}} &{\reserved{return}} &{\reserved{true}} \\
+{\reserved{void}} &{\reserved{while}} & \\
 \end{tabular}\\
 
 The symbols used in Ast are the following: \\
 
 \begin{tabular}{lll}
-{\symb{,}} &{\symb{(}} &{\symb{)}} \\
-{\symb{\{}} &{\symb{\}}} &{\symb{{$=$}}} \\
-{\symb{;}} &{\symb{{$|$}{$|$}}} &{\symb{\&\&}} \\
-{\symb{{$=$}{$=$}}} &{\symb{!{$=$}}} &{\symb{{$<$}}} \\
-{\symb{{$>$}}} &{\symb{{$<$}{$=$}}} &{\symb{{$>$}{$=$}}} \\
-{\symb{{$+$}}} &{\symb{{$-$}}} &{\symb{*}} \\
-{\symb{/}} &{\symb{\%}} &{\symb{!}} \\
-{\symb{{$+$}{$+$}}} &{\symb{{$-$}{$-$}}} & \\
+{\symb{[}} &{\symb{]}} &{\symb{,}} \\
+{\symb{(}} &{\symb{)}} &{\symb{\{}} \\
+{\symb{\}}} &{\symb{{$=$}}} &{\symb{;}} \\
+{\symb{{$|$}{$|$}}} &{\symb{\&\&}} &{\symb{{$=$}{$=$}}} \\
+{\symb{!{$=$}}} &{\symb{{$<$}}} &{\symb{{$>$}}} \\
+{\symb{{$<$}{$=$}}} &{\symb{{$>$}{$=$}}} &{\symb{{$+$}}} \\
+{\symb{{$-$}}} &{\symb{*}} &{\symb{/}} \\
+{\symb{\%}} &{\symb{!}} &{\symb{{$+$}{$+$}}} \\
+{\symb{{$-$}{$-$}}} & & \\
 \end{tabular}\\
 
 \subsection*{Comments}
@@ -84,6 +85,18 @@ All other symbols are terminals.\\
  & {\delimit}  &{\terminal{boolean}}  \\
  & {\delimit}  &{\terminal{double}}  \\
  & {\delimit}  &{\terminal{void}}  \\
+ & {\delimit}  &{\nonterminal{Type}} {\nonterminal{ListPos}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{ListPos}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{Pos}}  \\
+ & {\delimit}  &{\nonterminal{Pos}} {\nonterminal{ListPos}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{Pos}} & {\arrow}  &{\terminal{[}} {\nonterminal{Exp}} {\terminal{]}}  \\
+ & {\delimit}  &{\terminal{[}} {\terminal{]}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -137,6 +150,7 @@ All other symbols are terminals.\\
  & {\delimit}  &{\terminal{if}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}}  \\
  & {\delimit}  &{\terminal{if}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}} {\terminal{else}} {\nonterminal{Instr}}  \\
  & {\delimit}  &{\terminal{while}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}}  \\
+ & {\delimit}  &{\terminal{for}} {\terminal{(}} {\nonterminal{Instr}} {\nonterminal{Exp}} {\terminal{;}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -146,6 +160,7 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{Exp}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{Exp}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\nonterminal{ListPos}} {\terminal{{$=$}}} {\nonterminal{Exp}}  \\
  & {\delimit}  &{\nonterminal{Exp1}}  \\
 \end{tabular}\\
 
@@ -195,6 +210,7 @@ All other symbols are terminals.\\
  & {\delimit}  &{\terminal{{$+$}{$+$}}} {\nonterminal{Exp7}}  \\
  & {\delimit}  &{\terminal{{$-$}{$-$}}} {\nonterminal{Exp7}}  \\
  & {\delimit}  &{\terminal{(}} {\nonterminal{Exp}} {\terminal{)}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\nonterminal{ListPos}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
  & {\delimit}  &{\nonterminal{Ident}} {\terminal{(}} {\nonterminal{ListExp}} {\terminal{)}}  \\
  & {\delimit}  &{\nonterminal{Double}}  \\
@@ -203,6 +219,8 @@ All other symbols are terminals.\\
  & {\delimit}  &{\terminal{false}}  \\
  & {\delimit}  &{\nonterminal{String}}  \\
  & {\delimit}  &{\terminal{(}} {\terminal{int}} {\terminal{)}} {\nonterminal{Exp7}}  \\
+ & {\delimit}  &{\terminal{(}} {\terminal{boolean}} {\terminal{)}} {\nonterminal{Exp7}}  \\
+ & {\delimit}  &{\terminal{(}} {\terminal{double}} {\terminal{)}} {\nonterminal{Exp7}}  \\
 \end{tabular}\\
 
 

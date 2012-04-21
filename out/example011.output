@@ -1,0 +1,8 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("b",[]),("c",[]),("d",[]),("x",[]),("y",[]),("z",[])]) (fromList [("fooBar",FuncDecl Int (Ident "fooBar") [ArgDecl Int (Ident "x"),ArgDecl Int (Ident "y"),ArgDecl Int (Ident "z")] (IBlock [IDecl Int [IdentExp (Ident "a") (EInt 3),IdentExp (Ident "b") (EInt 1),IdentExp (Ident "c") (EInt 2)],IDecl Int [IdentEmpty (Ident "d")],IExp (EVarSet (Ident "d") (EAdd (EAdd (EMul (EVar (Ident "x")) (EVar (Ident "a"))) (EMul (EVar (Ident "y")) (EVar (Ident "b")))) (EMul (EVar (Ident "c")) (EVar (Ident "z"))))),IRet (EVar (Ident "d"))])),("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "x") (EInt 0),IdentExp (Ident "y") (EInt 1)],IExp (ECall (Ident "printInt") [ECall (Ident "fooBar") [EVar (Ident "y"),EVar (Ident "x"),EInt 73]]),IRet (EInt 0)]))]) 9 (fromList [(1,ValueInt 0),(2,ValueInt 1),(3,ValueInt 73),(4,ValueInt 0),(5,ValueInt 1),(6,ValueInt 3),(7,ValueInt 1),(8,ValueInt 2),(9,ValueInt 149)]) ["149\n"]
+
+output:
+149

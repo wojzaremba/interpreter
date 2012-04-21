@@ -1,0 +1,7 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList []) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IRet (EInt 0)]))]) 0 (fromList []) []
+
+output:

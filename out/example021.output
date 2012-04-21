@@ -1,0 +1,7 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[])]) (fromList [("foo",FuncDecl Int (Ident "foo") [] (IBlock [IRet (EInt 5)])),("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentEmpty (Ident "a")],IExp (EVarSet (Ident "a") (EAdd (ECall (Ident "foo") []) (EInt 3))),IRet (EInt 0)]))]) 1 (fromList [(1,ValueInt 8)]) []
+
+output:

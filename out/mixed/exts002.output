@@ -1,0 +1,12 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList [("a",[]),("i",[]),("size",[]),("tab",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl (Table Int [PosF (EInt 5)]) [IdentEmpty (Ident "a")],IExp (ECall (Ident "sort") [EVar (Ident "a"),EInt 5]),IFor (IDecl Int [IdentExp (Ident "i") (EInt 0)]) (ESm (EVar (Ident "i")) (EInt 5)) (EPostPlus (EVar (Ident "i"))) (IBlock [IExp (ECall (Ident "printInt") [EVarPos (Ident "a") [PosF (EVar (Ident "i"))]])]),IRet (EInt 0)])),("sort",FuncDecl Void (Ident "sort") [ArgDecl (Table Int [PosE]) (Ident "tab"),ArgDecl Int (Ident "size")] (IBlock [IFor (IDecl Int [IdentExp (Ident "i") (EInt 0)]) (ESm (EVar (Ident "i")) (EVar (Ident "size"))) (EPostPlus (EVar (Ident "i"))) (IBlock [IExp (EVarSetTable (Ident "tab") [PosF (EVar (Ident "i"))] (EMul (EMul (EVar (Ident "i")) (EVar (Ident "i"))) (EVar (Ident "i"))))]),IRetEmpty]))]) 4 (fromList [(1,ValueTable Int 5 (fromList [(0,ValueInt 0),(1,ValueInt 1),(2,ValueInt 8),(3,ValueInt 27),(4,ValueInt 64)]) 1),(2,ValueInt 5),(3,ValueInt 5),(4,ValueInt 5)]) ["64\n","27\n","8\n","1\n","0\n"]
+
+output:
+0
+1
+8
+27
+64

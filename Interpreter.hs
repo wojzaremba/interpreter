@@ -18,7 +18,8 @@ type Fresh = Int
 type Output = [String]
 data Env = Env Loc Source Fresh Values Output deriving Show
 type Values = Map Int Value 
-data Value = ValueInt Integer | ValueDouble Double | ValueBool Bool | ValueString String | ValueVoid deriving (Show, Eq)
+--most mysterious is ValueTable - last parameter referes to location, so once it is passed around we can assign location to other variable
+data Value = ValueInt Integer | ValueDouble Double | ValueBool Bool | ValueString String | ValueTable Type Int (Map Int Value) Int | ValueVoid deriving (Show, Eq)
 
 sm (ValueInt a) (ValueInt b) = ValueBool $ a < b
 sm (ValueDouble a) (ValueDouble b) = ValueBool $ a < b
@@ -78,11 +79,31 @@ setVal name val =
       else
         throwError $ "Error during setting variable " ++ name ++ " this variable is not initialized"
 
+--tables keep references to location
+setLoc :: Value -> Int -> Value
+setLoc (ValueTable t i m _) f = ValueTable t i m f
+setLoc v f = v
+
 initVal :: String -> Value -> Res Value
-initVal name val =
+initVal name (ValueTable t i m vf) = 
+  if (vf == -1) then
+      initValInter name (ValueTable t i m vf)
+    else
+      do
+        (Env l s f v output) <- get    
+        let loc = if (member name l) then
+                     insert name (vf:(l!name)) l
+                   else
+                     insert name [vf] l
+        put $ Env loc s f v output
+        return (ValueTable t i m vf)
+
+initVal name v = initValInter name v
+initValInter :: String -> Value -> Res Value
+initValInter name val =
   do
     (Env l s f v output) <- get    
-    let values = insert (f+1) val v
+    let values = insert (f+1) (setLoc val (f+1)) v
     let loc = if (member name l) then
                   insert name ((f+1):(l!name)) l
                 else
@@ -114,15 +135,37 @@ expRes e =
     env <- get
     let Env loc source fresh values output = env
     case e of
-      EVarSet (Ident a) exp -> 
+      EVarSet (Ident a) exp -> do;v1 <- expRes exp;setVal a v1
+      EVarSetTable (Ident name) pos exp -> 
         do 
-          v1 <- expRes exp
-          setVal a v1
+          (Env l s f v output) <- get
+          if ((member name l) && (Prelude.null (l ! name)) == False) then 
+            do
+              let mainPos = (head $ l ! name)
+              let (ValueTable t size m tabLoc) = v ! mainPos
+              ValueInt p <- getPos pos
+              v1 <- expRes exp
+              (Env l s f v output) <- get
+              let newArray = ValueTable t size (insert (fromInteger p) v1 m) tabLoc
+              let values = insert mainPos newArray v
+              put $ Env l s f values output
+              return v1
+            else
+              throwError $ "Error during setting variable in array " ++ name ++ " under possition " ++ (show pos) ++ " this variable is not initialized"
       EVar (Ident a) -> 
         if ((member a loc) && (Prelude.null (loc ! a)) == False)
           then return $ values ! (head (loc ! a))
           else 
             throwError $ "Cant find variable " ++ show a ++ " in " ++ show e
+      EVarPos (Ident a) pos -> 
+        if ((member a loc) && (Prelude.null (loc ! a)) == False)
+          then 
+            do 
+              let (ValueTable t size m tabLoc) = values ! (head (loc ! a))
+              ValueInt p <- getPos pos
+              return $ m ! (fromInteger p)
+          else 
+            throwError $ "Cant find array " ++ show a ++ " in " ++ show e
       EInt i -> return $ ValueInt i
       EDouble i -> return $ ValueDouble i
       EStr s -> return $ ValueString s
@@ -168,9 +211,23 @@ expRes e =
         do
           v1 <- expRes a
           case v1 of 
-            ValueBool v2 -> if (v2) 
-                              then return $ ValueInt 1
-                              else return $ ValueInt 0
+            ValueBool v2 -> if (v2) then return $ ValueInt 1 else return $ ValueInt 0
+            ValueDouble v2 -> return $ ValueInt $ round v2
+            ValueInt _ -> return v1
+      EToDouble a -> 
+        do
+          v1 <- expRes a
+          case v1 of 
+            ValueBool v2 -> if (v2) then return $ ValueDouble 1.0 else return $ ValueDouble 0.0
+            ValueInt v2 -> return $ ValueDouble $ fromInteger v2
+            ValueDouble _ -> return v1
+      EToBool a -> 
+        do
+          v1 <- expRes a
+          case v1 of 
+            ValueInt v2 -> if (v2 /= 0) then return $ ValueBool True else return $ ValueBool False
+            ValueDouble v2 -> if (v2 /= 0.0) then return $ ValueBool True else return $ ValueBool False
+            ValueBool _ -> return v1
       ECall (Ident a) args -> 
         do
           let (env3, arg, error) = foldl (\a f -> 
@@ -180,6 +237,15 @@ expRes e =
                             ) (env, [], "") args
           if (error == "") then do;put env3;call a arg; else throwError error
  
+getPos :: [Pos] -> Res Value
+getPos [] = return $ ValueInt 1
+getPos ((PosF p):h) = do; a <- expRes p;b <- getPos h; return $ a * b
+
+getEmpty :: Type -> Res Value
+getEmpty Int = return $ ValueInt 0
+getEmpty Double = return $ ValueDouble 0.0
+getEmpty Boolean = return $ ValueBool False
+getEmpty (Table t pos) = do; ValueInt p <- getPos pos;return $ ValueTable t (fromInteger p) empty (-1)
 
 block :: [Instr] -> Res Value
 block [] = 
@@ -193,7 +259,7 @@ block (t:h) =
     case t of 
       IBlock instr -> do; block instr; block h
       IDecl _ [] -> block h
-      IDecl ty ((IdentEmpty (Ident id)):t) -> do; (initVal id (ValueInt 0)); val <- block ((IDecl ty t):h);env <- get;delVal id env;return val;
+      IDecl ty ((IdentEmpty (Ident id)):t) -> do; emp <- getEmpty ty;(initVal id emp); val <- block ((IDecl ty t):h);env <- get;delVal id env;return val;
       IDecl ty ((IdentExp (Ident id) exp):t) -> do; v <- expRes exp;(initVal id v); val <- block ((IDecl ty t):h);env <- get;delVal id env;return val;
       IIf exp instr ->
         do 
@@ -203,6 +269,7 @@ block (t:h) =
       IRet exp -> expRes exp
       IRetEmpty -> return ValueVoid
       IExp exp -> do; expRes exp; block h
+      IFor instr1 exp exp2 instr3 -> block (instr1:(IWhile exp (IBlock (instr3:[IExp exp2]))):h)
       w@(IWhile exp instr) -> 
         do 
           ValueBool a <- expRes exp
@@ -236,6 +303,7 @@ checkType :: Type -> Value -> Bool
 checkType Int (ValueInt _) = True
 checkType Boolean (ValueBool _) = True
 checkType Double (ValueDouble _) = True
+checkType (Table tt pos) (ValueTable t _ _ _) = (tt == t)
 checkType _ _ = False
 
 call :: String -> [Value] -> Res Value
@@ -256,7 +324,7 @@ call funcId args =
               let val = zip args funcArgs
               let (env2, error) = foldl (\a f -> let (v, (t, name)) = f in 
                                                    if (checkType t v) then
-                                                       (snd (runState (runErrorT (initVal name v)) (fst a)), snd a) 
+                                                         (snd (runState (runErrorT (initVal name v)) (fst a)), snd a) 
                                                      else
                                                        (fst a, "Wrong type of " ++ show v ++ " , it should be " ++ show t ++ "\n" ++ snd a)  
                                         ) (env,"") val   
