@@ -1,9 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("a",[]),("b",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl (Table Int [PosF (EInt 5)]) [IdentEmpty (Ident "a")],IDecl Int [IdentExp (Ident "b") (EInt 0)],IExp (EVarSet (Ident "b") (EVarSetTable (Ident "a") [PosF (EAdd (EVar (Ident "b")) (EInt 1))] (EInt 1))),IExp (ECall (Ident "printInt") [EVarPos (Ident "a") [PosF (EInt 1)]]),IExp (ECall (Ident "printInt") [EVar (Ident "b")]),IRet (EInt 0)]))]) 2 (fromList [(1,ValueTable Int 5 (fromList [(1,ValueInt 1)]) 1),(2,ValueInt 1)]) ["1\n","1\n"]
-
-output:
-1
-1

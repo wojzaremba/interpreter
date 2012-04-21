@@ -1,9 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("x",[]),("y",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentEmpty (Ident "x"),IdentEmpty (Ident "y")],IExp (EVarSet (Ident "x") (EInt 45)),IExp (EVarSet (Ident "y") (EMinus (EInt 36))),IExp (ECall (Ident "printInt") [EVar (Ident "x")]),IExp (ECall (Ident "printInt") [EVar (Ident "y")]),IRet (EInt 0)]))]) 2 (fromList [(1,ValueInt 45),(2,ValueInt (-36))]) ["-36\n","45\n"]
-
-output:
-45
--36

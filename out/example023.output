@@ -1,7 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("x",[]),("y",[])]) (fromList [("firstMatchedSecondMatched",FuncDecl Int (Ident "firstMatchedSecondMatched") [] (IBlock [IIfElse ETrue (IIfElse EFalse (IRet (EInt 11)) (IRet (EInt 12))) (IIfElse ETrue (IRet (EInt 13)) (IRet (EInt 14)))])),("firstMatchedSecondRet",FuncDecl Int (Ident "firstMatchedSecondRet") [] (IBlock [IIfElse ETrue (IIfElse EFalse (IRet (EInt 8)) (IRet (EInt 9))) (IRet (EInt 10))])),("firstRetSecondMatched",FuncDecl Int (Ident "firstRetSecondMatched") [] (IBlock [IIfElse ETrue (IRet (EInt 5)) (IIfElse EFalse (IRet (EInt 6)) (IRet (EInt 7)))])),("firstUnmatchedSecondMatched",FuncDecl Int (Ident "firstUnmatchedSecondMatched") [] (IBlock [IIf ETrue (IIfElse EFalse (IRet (EInt 3)) (IRet (EInt 4)))])),("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "x") (EInt 0),IdentExp (Ident "y") (EInt 1)],IRet (EInt 0)])),("singleMatched",FuncDecl Int (Ident "singleMatched") [] (IBlock [IIfElse ETrue (IRet (EInt 2)) (IRet (EInt 3))])),("singleUnmatched",FuncDecl Int (Ident "singleUnmatched") [] (IBlock [IIf ETrue (IRet (EInt 1))]))]) 2 (fromList [(1,ValueInt 0),(2,ValueInt 1)]) []
-
-output:

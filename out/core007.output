@@ -1,8 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("x",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "x") (EInt 7)],IExp (ECall (Ident "printInt") [EVar (Ident "x")]),IRet (EInt 0)]))]) 1 (fromList [(1,ValueInt 7)]) ["7\n"]
-
-output:
-7

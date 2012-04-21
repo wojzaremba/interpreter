@@ -1,8 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("y",[])]) (fromList [("ev",FuncDecl Int (Ident "ev") [ArgDecl Int (Ident "y")] (IBlock [IIfElse (EGr (EVar (Ident "y")) (EInt 0)) (IRet (ECall (Ident "ev") [ESub (EVar (Ident "y")) (EInt 2)])) (IIfElse (ESm (EVar (Ident "y")) (EInt 0)) (IRet (EInt 0)) (IRet (EInt 1)))])),("main",FuncDecl Int (Ident "main") [] (IBlock [IExp (ECall (Ident "printInt") [ECall (Ident "ev") [EInt 17]]),IRet (EInt 0)]))]) 10 (fromList [(1,ValueInt 17),(2,ValueInt 15),(3,ValueInt 13),(4,ValueInt 11),(5,ValueInt 9),(6,ValueInt 7),(7,ValueInt 5),(8,ValueInt 3),(9,ValueInt 1),(10,ValueInt (-1))]) ["0\n"]
-
-output:
-0

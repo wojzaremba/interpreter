@@ -1,8 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("a",[]),("b",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "a") (EInt 2)],IDecl Double [IdentExp (Ident "b") (EToDouble (EVar (Ident "a")))],IExp (ECall (Ident "printDouble") [EVar (Ident "b")]),IRet (EInt 0)]))]) 2 (fromList [(1,ValueInt 2),(2,ValueDouble 2.0)]) ["2.0\n"]
-
-output:
-2.0

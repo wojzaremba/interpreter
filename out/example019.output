@@ -1,7 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("i",[]),("j",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentEmpty (Ident "i")],IExp (EVarSet (Ident "i") (EInt 0)),IDecl Int [IdentExp (Ident "j") (EAdd (EInt 3) (EMinus (EPlus (EMinus (EPlus (EVar (Ident "i")))))))],IRet (EInt 0)]))]) 2 (fromList [(1,ValueInt 0),(2,ValueInt 3)]) []
-
-output:

@@ -1,8 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList [("a",[]),("b",[]),("c",[]),("d",[])]) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IDecl Int [IdentExp (Ident "a") (EInt 5)],IDecl Boolean [IdentExp (Ident "b") EFalse],IDecl Int [IdentExp (Ident "c") (EInt 2)],IDecl Double [IdentExp (Ident "d") (EAdd (EDouble 1.5) (EToDouble (EAdd (EVar (Ident "a")) (EMul (EToInt (EVar (Ident "b"))) (EVar (Ident "c"))))))],IExp (ECall (Ident "printDouble") [EVar (Ident "d")]),IRet (EInt 0)]))]) 4 (fromList [(1,ValueInt 5),(2,ValueBool False),(3,ValueInt 2),(4,ValueDouble 6.5)]) ["6.5\n"]
-
-output:
-6.5

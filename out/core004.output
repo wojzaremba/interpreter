@@ -1,8 +1,0 @@
-value :
-ValueInt 0
-
-env :
-Env (fromList []) (fromList [("main",FuncDecl Int (Ident "main") [] (IBlock [IIf (EEq ETrue ETrue) (IBlock [IExp (ECall (Ident "printInt") [EInt 42])]),IRet (EInt 0)]))]) 0 (fromList []) ["42\n"]
-
-output:
-42
