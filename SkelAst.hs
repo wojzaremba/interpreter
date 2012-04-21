@@ -17,7 +17,7 @@ transIdent x = case x of
 transType :: Type -> Result
 transType x = case x of
   Int  -> failure x
-  Bool  -> failure x
+  Boolean  -> failure x
   Double  -> failure x
   Void  -> failure x
 
@@ -74,6 +74,10 @@ transExp x = case x of
   ENot exp  -> failure x
   EPlus exp  -> failure x
   EMinus exp  -> failure x
+  EPostPlus exp  -> failure x
+  EPostMinus exp  -> failure x
+  EPrePlus exp  -> failure x
+  EPreMinus exp  -> failure x
   EVar id  -> failure x
   ECall id exps  -> failure x
   EDouble d  -> failure x

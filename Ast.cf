@@ -1,7 +1,7 @@
 entrypoints Prog;
 
 Int.		Type ::= "int" ;
-Bool.		Type ::= "boolean" ;
+Boolean.	Type ::= "boolean" ;
 Double.		Type ::= "double" ;
 Void.		Type ::= "void" ;
 
@@ -65,6 +65,10 @@ EMod.	 	Exp6 ::= Exp6 "%" Exp7 ;
 ENot.		Exp7 ::= "!" Exp7 ;
 EPlus.		Exp7 ::= "+" Exp7 ;
 EMinus.		Exp7 ::= "-" Exp7 ;
+EPostPlus.	Exp7 ::= Exp7 "++" ;
+EPostMinus.	Exp7 ::= Exp7 "--" ;
+EPrePlus.	Exp7 ::= "++" Exp7 ;
+EPreMinus.	Exp7 ::= "--" Exp7 ;
 
 _.		Exp7 ::= "(" Exp ")" ;
 EVar.           Exp7 ::= Ident ;

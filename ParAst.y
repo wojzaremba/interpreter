@@ -34,6 +34,8 @@ import ErrM
  '/' { PT _ (TS "/") }
  '%' { PT _ (TS "%") }
  '!' { PT _ (TS "!") }
+ '++' { PT _ (TS "++") }
+ '--' { PT _ (TS "--") }
  'boolean' { PT _ (TS "boolean") }
  'double' { PT _ (TS "double") }
  'else' { PT _ (TS "else") }
@@ -61,7 +63,7 @@ String  :: { String }  : L_quoted { $1 }
 
 Type :: { Type }
 Type : 'int' { Int } 
-  | 'boolean' { Bool }
+  | 'boolean' { Boolean }
   | 'double' { Double }
   | 'void' { Void }
 
@@ -170,6 +172,10 @@ Exp7 :: { Exp }
 Exp7 : '!' Exp7 { ENot $2 } 
   | '+' Exp7 { EPlus $2 }
   | '-' Exp7 { EMinus $2 }
+  | Exp7 '++' { EPostPlus $1 }
+  | Exp7 '--' { EPostMinus $1 }
+  | '++' Exp7 { EPrePlus $2 }
+  | '--' Exp7 { EPreMinus $2 }
   | '(' Exp ')' { $2 }
   | Ident { EVar $1 }
   | Ident '(' ListExp ')' { ECall $1 $3 }

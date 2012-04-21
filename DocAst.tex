@@ -67,6 +67,7 @@ The symbols used in Ast are the following: \\
 {\symb{{$>$}}} &{\symb{{$<$}{$=$}}} &{\symb{{$>$}{$=$}}} \\
 {\symb{{$+$}}} &{\symb{{$-$}}} &{\symb{*}} \\
 {\symb{/}} &{\symb{\%}} &{\symb{!}} \\
+{\symb{{$+$}{$+$}}} &{\symb{{$-$}{$-$}}} & \\
 \end{tabular}\\
 
 \subsection*{Comments}
@@ -189,6 +190,10 @@ All other symbols are terminals.\\
 {\nonterminal{Exp7}} & {\arrow}  &{\terminal{!}} {\nonterminal{Exp7}}  \\
  & {\delimit}  &{\terminal{{$+$}}} {\nonterminal{Exp7}}  \\
  & {\delimit}  &{\terminal{{$-$}}} {\nonterminal{Exp7}}  \\
+ & {\delimit}  &{\nonterminal{Exp7}} {\terminal{{$+$}{$+$}}}  \\
+ & {\delimit}  &{\nonterminal{Exp7}} {\terminal{{$-$}{$-$}}}  \\
+ & {\delimit}  &{\terminal{{$+$}{$+$}}} {\nonterminal{Exp7}}  \\
+ & {\delimit}  &{\terminal{{$-$}{$-$}}} {\nonterminal{Exp7}}  \\
  & {\delimit}  &{\terminal{(}} {\nonterminal{Exp}} {\terminal{)}}  \\
  & {\delimit}  &{\nonterminal{Ident}}  \\
  & {\delimit}  &{\nonterminal{Ident}} {\terminal{(}} {\nonterminal{ListExp}} {\terminal{)}}  \\

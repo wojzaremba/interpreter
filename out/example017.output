@@ -1,0 +1,7 @@
+value :
+ValueInt 0
+
+env :
+Env (fromList []) (fromList [("loopTest",FuncDecl Void (Ident "loopTest") [] (IBlock [IIf ETrue (IWhile EFalse (IIf ETrue IRetEmpty))])),("main",FuncDecl Int (Ident "main") [] (IBlock [IExp (ECall (Ident "loopTest") []),IRet (EInt 0)]))]) 0 (fromList []) []
+
+output:

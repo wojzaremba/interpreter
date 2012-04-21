@@ -1,7 +1,7 @@
 /* Test boolean operators */
 
 int main () {
- /* int x = 4;
+  int x = 4;
   if (3 <= x && 4 != 2 && true) {
     printBool(true);
   } else {
@@ -13,10 +13,10 @@ int main () {
 
   printBool(4 == x && true == !false && true);
 
-  printBool(implies(false,false));*/
-  printBool(implies(10, 20));
-/*  printBool(implies(true,false));
-  printBool(implies(true,true));*/
+  printBool(implies(false,false));
+  printBool(implies(false,true));
+  printBool(implies(true,false));
+  printBool(implies(true,true));
   return 0 ;
 
 }
@@ -35,9 +35,6 @@ void printBool(boolean b) {
  return;
 }
 
-boolean implies(int x, int y) {
-  printInt(x);
-  printInt(y);
-  return true;
- // return !x || x == y;
+boolean implies(boolean x, boolean y) {
+  return !x || x == y;
 }

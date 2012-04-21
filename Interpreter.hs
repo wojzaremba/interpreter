@@ -28,6 +28,10 @@ esm (ValueInt a) (ValueInt b) = ValueBool $ a <= b
 esm (ValueDouble a) (ValueDouble b) = ValueBool $ a <= b
 egr (ValueInt a) (ValueInt b) = ValueBool $ a >= b
 egr (ValueDouble a) (ValueDouble b) = ValueBool $ a >= b
+
+divV (ValueInt a) (ValueInt b) = ValueInt $ quot a b
+divV (ValueDouble a) (ValueDouble b) = ValueDouble $ a / b
+modV (ValueInt a) (ValueInt b) = ValueInt $ mod a b
 instance Num Value where
   (ValueInt a) + (ValueInt b) = ValueInt $ a + b
   (ValueDouble a) + (ValueDouble b) = ValueDouble $ a + b
@@ -52,9 +56,9 @@ getOutput (Env _ _ _ _ output) = join $ reverse output
 getSource :: Env -> Source
 getSource (Env _ source _ _ _) = source
 
-getFuncArgs :: Func -> [String]
+getFuncArgs :: Func -> [(Type, String)]
 getFuncArgs f = case f of 
-                  FuncDecl _ _ arg _ -> Prelude.map (\x -> case x of ArgDecl _ (Ident a) -> a) arg
+                  FuncDecl _ _ arg _ -> reverse $ Prelude.map (\x -> case x of ArgDecl t (Ident a) -> (t, a)) arg
 
 fresh :: Env -> Env
 fresh (Env l s f v o) = Env l s (f+1) v o
@@ -66,7 +70,7 @@ setVal :: String -> Value -> Res Value
 setVal name val =
   do
     (Env l s f v output) <- get
-    if (member name l) then 
+    if ((member name l) && (Prelude.null (l ! name)) == False) then 
         do
           let values = insert (head $ l ! name) val v
           put $ Env l s f values output
@@ -77,9 +81,13 @@ setVal name val =
 initVal :: String -> Value -> Res Value
 initVal name val =
   do
-    (Env l s f v output) <- get
+    (Env l s f v output) <- get    
     let values = insert (f+1) val v
-    put $ Env (insert name [(f+1)] l) s (f+1) values output
+    let loc = if (member name l) then
+                  insert name ((f+1):(l!name)) l
+                else
+                  insert name [(f+1)] l
+    put $ Env loc s (f+1) values output
     return val
 
 delVal :: String -> Env -> Res Value
@@ -111,10 +119,10 @@ expRes e =
           v1 <- expRes exp
           setVal a v1
       EVar (Ident a) -> 
-        if (member a loc)
+        if ((member a loc) && (Prelude.null (loc ! a)) == False)
           then return $ values ! (head (loc ! a))
           else 
-            throwError $ "Cant find variable " ++ show a
+            throwError $ "Cant find variable " ++ show a ++ " in " ++ show e
       EInt i -> return $ ValueInt i
       EDouble i -> return $ ValueDouble i
       EStr s -> return $ ValueString s
@@ -127,6 +135,12 @@ expRes e =
       EESm a b -> simExp esm a b 
       EEGr a b -> simExp egr a b 
       EAdd a b -> simExp (+) a b
+      EDiv a b -> simExp (divV) a b
+      EMod a b -> simExp (modV) a b
+      EPostPlus (EVar (Ident a)) -> do;v1 <- expRes (EVar (Ident a));setVal a (v1 + (ValueInt 1));return v1
+      EPostMinus (EVar (Ident a)) -> do;v1 <- expRes (EVar (Ident a));setVal a (v1 - (ValueInt 1));return v1
+      EPrePlus (EVar (Ident a)) -> do;v1 <- expRes (EVar (Ident a));setVal a (v1 + (ValueInt 1));return (v1 + (ValueInt 1))
+      EPreMinus (EVar (Ident a)) -> do;v1 <- expRes (EVar (Ident a));setVal a (v1 - (ValueInt 1));return (v1 - (ValueInt 1))
       ENot a -> do; ValueBool v <- expRes a;return $ ValueBool $ not v
       EAnd a b -> 
         do
@@ -172,14 +186,15 @@ block [] =
   do 
     env <- get
     return ValueVoid
+
 block (t:h) = 
   do 
     env@(Env loc source fresh values output) <- get
     case t of 
       IBlock instr -> do; block instr; block h
       IDecl _ [] -> block h
-      IDecl ty ((IdentEmpty (Ident id)):t) -> do; (initVal id (ValueInt 0)); block ((IDecl ty t):h)
-      IDecl ty ((IdentExp (Ident id) exp):t) -> do; v <- expRes exp;(initVal id v); block ((IDecl ty t):h)
+      IDecl ty ((IdentEmpty (Ident id)):t) -> do; (initVal id (ValueInt 0)); val <- block ((IDecl ty t):h);env <- get;delVal id env;return val;
+      IDecl ty ((IdentExp (Ident id) exp):t) -> do; v <- expRes exp;(initVal id v); val <- block ((IDecl ty t):h);env <- get;delVal id env;return val;
       IIf exp instr ->
         do 
           ValueBool a <- expRes exp
@@ -211,10 +226,17 @@ printValue (h:t) =
     case h of
       ValueInt h -> printString (show h)
       ValueDouble h -> printString (show h)
-      ValueBool h -> printString (show h)
+      ValueBool True -> printString "true"
+      ValueBool False -> printString "false"
       ValueString h -> printString h
       ValueVoid -> throwError $ "can't printout ValueVoid " ++ (show h)
     printValue t
+
+checkType :: Type -> Value -> Bool
+checkType Int (ValueInt _) = True
+checkType Boolean (ValueBool _) = True
+checkType Double (ValueDouble _) = True
+checkType _ _ = False
 
 call :: String -> [Value] -> Res Value
 call funcId args = 
@@ -232,11 +254,20 @@ call funcId args =
               let (FuncDecl _ _ _ (IBlock instr)) = func
               let funcArgs = getFuncArgs func
               let val = zip args funcArgs
-              let env2 = foldl (\a f -> let (v, name) = f in snd (runState (runErrorT (initVal name v)) a)) env val   
-              let res = runState (runErrorT (block instr)) env2
-              case res of
-                (Right val, env3) -> do;put $ foldl (\a name -> snd (runState (runErrorT (delVal name a)) a)) env3 funcArgs;return val
-                (Left err, env3) -> throwError $ err
+              let (env2, error) = foldl (\a f -> let (v, (t, name)) = f in 
+                                                   if (checkType t v) then
+                                                       (snd (runState (runErrorT (initVal name v)) (fst a)), snd a) 
+                                                     else
+                                                       (fst a, "Wrong type of " ++ show v ++ " , it should be " ++ show t ++ "\n" ++ snd a)  
+                                        ) (env,"") val   
+              if (error == "") then
+                do
+                  let res = runState (runErrorT (block instr)) env2
+                  case res of
+                    (Right val, env3) -> do;put $ foldl (\a name -> snd (runState (runErrorT (delVal (snd name) a)) a)) env3 funcArgs;return val
+                    (Left err, env3) -> throwError $ err
+                else
+                  throwError $ error
           else
             throwError $ "Function " ++ funcId ++ " doesn't exist" 
 
@@ -257,7 +288,7 @@ run s = case pProg (myLexer s) of
     Bad err -> ("Bad" ++ err, -1)
     Ok e -> case interpret e of
               (Right value, env) -> ("value :\n" ++ (show value) ++ "\n\nenv :\n" ++ show env ++ "\n\noutput:\n" ++ (getOutput env), 0)
-              (Left (error), env) -> ("error :\n" ++ (show error) ++ "\n\nenv :\n" ++ show env ++ "\n", -1)
+              (Left (error), env) -> ("error :\n" ++ error ++ "\n\nenv :\n" ++ show env ++ "\n", -1)
 
 main = do
   code <- getContents

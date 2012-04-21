@@ -5,7 +5,7 @@ module AbsAst where
 newtype Ident = Ident String deriving (Eq,Ord,Show)
 data Type =
    Int
- | Bool
+ | Boolean
  | Double
  | Void
   deriving (Eq,Ord,Show)
@@ -56,6 +56,10 @@ data Exp =
  | ENot Exp
  | EPlus Exp
  | EMinus Exp
+ | EPostPlus Exp
+ | EPostMinus Exp
+ | EPrePlus Exp
+ | EPreMinus Exp
  | EVar Ident
  | ECall Ident [Exp]
  | EDouble Double

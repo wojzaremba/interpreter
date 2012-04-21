@@ -84,7 +84,7 @@ instance Print Ident where
 instance Print Type where
   prt i e = case e of
    Int  -> prPrec i 0 (concatD [doc (showString "int")])
-   Bool  -> prPrec i 0 (concatD [doc (showString "boolean")])
+   Boolean  -> prPrec i 0 (concatD [doc (showString "boolean")])
    Double  -> prPrec i 0 (concatD [doc (showString "double")])
    Void  -> prPrec i 0 (concatD [doc (showString "void")])
 
@@ -157,6 +157,10 @@ instance Print Exp where
    ENot exp -> prPrec i 7 (concatD [doc (showString "!") , prt 7 exp])
    EPlus exp -> prPrec i 7 (concatD [doc (showString "+") , prt 7 exp])
    EMinus exp -> prPrec i 7 (concatD [doc (showString "-") , prt 7 exp])
+   EPostPlus exp -> prPrec i 7 (concatD [prt 7 exp , doc (showString "++")])
+   EPostMinus exp -> prPrec i 7 (concatD [prt 7 exp , doc (showString "--")])
+   EPrePlus exp -> prPrec i 7 (concatD [doc (showString "++") , prt 7 exp])
+   EPreMinus exp -> prPrec i 7 (concatD [doc (showString "--") , prt 7 exp])
    EVar id -> prPrec i 7 (concatD [prt 0 id])
    ECall id exps -> prPrec i 7 (concatD [prt 0 id , doc (showString "(") , prt 0 exps , doc (showString ")")])
    EDouble d -> prPrec i 7 (concatD [prt 0 d])
