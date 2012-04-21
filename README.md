@@ -8,7 +8,7 @@ Project require
 
 Overview
 ========
-Project contains simple code interpreter developed in haskell. File Ast.cl contains description of a grammar. In order to complile entire project please execute make file. All tests are available in examples directory. Test procedure might be start by executing start.sh script. Project is based on syntax from JavaLight programming language.
+Project contains simple code interpreter developed in haskell. File Ast.cl contains description of a grammar. In order to complile entire project please execute make file. All tests are available in examples directory. Test procedure might be start by executing start.sh script. Project is based on syntax from JavaLight programming language. Project is also available on github https://github.com/wojzaremba/interpreter 
 
 Capabilities
 ============
@@ -30,4 +30,4 @@ This interpreter supports
 
 Author
 ======
-Developed by Wojciech Zaremba. You can reach me at woj.zaremba (at) gmail (dot) com
+Developed by Wojciech Zaremba. You can reach me at woj.zaremba (at) gmail (dot) com 
