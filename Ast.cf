@@ -1,14 +1,14 @@
 entrypoints Prog;
 
 Int.		Type ::= "int" ;
-Bool.		Type ::= "bool" ;
+Bool.		Type ::= "boolean" ;
 Double.		Type ::= "double" ;
 Void.		Type ::= "void" ;
 
 
-[].		[Ident] ::= ;
-(:[]).		[Ident] ::= Ident ;
-(:).		[Ident] ::= Ident "," [Ident] ;
+[].		[IdentExp] ::= ;
+(:[]).		[IdentExp] ::= IdentExp ;
+(:).		[IdentExp] ::= IdentExp "," [IdentExp] ;
 
 [].		[Func] ::= ;
 (:[]).		[Func] ::= Func ;
@@ -21,7 +21,7 @@ Void.		Type ::= "void" ;
 [].		[Arg] ::= ;
 (:[]).		[Arg] ::= Arg ;
 (:).		[Arg] ::= Arg "," [Arg] ;
-ArgDecl.	Arg ::= Ident ":" Type ; 
+ArgDecl.	Arg ::= Type Ident; 
 
 [].		[Exp] ::= ;
 (:[]).		[Exp] ::= Exp ;
@@ -33,8 +33,10 @@ FuncDecl.	Func ::= Type Ident "(" [Arg] ")" Instr;
 
 IBlock.		Instr ::= "{" [Instr] "}";
 
-IDeclSt.	Instr ::= Type Ident "=" Exp ";" ;
-IDecl.		Instr ::= Type [Ident] ";" ;
+IdentEmpty.     IdentExp ::= Ident ;
+IdentExp.       IdentExp ::= Ident "=" Exp;
+
+IDecl.		Instr ::= Type [IdentExp] ";" ;
 IRet.		Instr ::= "return" Exp ";" ;
 IRetEmpty.	Instr ::= "return" ";" ;
 IExp.		Instr ::= Exp ";" ;
@@ -87,3 +89,4 @@ _. 		Exp  ::= Exp1 ;
 
 comment "/*" "*/";
 comment "//";
+comment "#";

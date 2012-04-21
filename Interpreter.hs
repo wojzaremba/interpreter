@@ -21,16 +21,30 @@ type Values = Map Int Value
 data Value = ValueInt Integer | ValueDouble Double | ValueBool Bool | ValueString String | ValueVoid deriving (Show, Eq)
 
 sm (ValueInt a) (ValueInt b) = ValueBool $ a < b
+sm (ValueDouble a) (ValueDouble b) = ValueBool $ a < b
 gr (ValueInt a) (ValueInt b) = ValueBool $ a > b
+gr (ValueDouble a) (ValueDouble b) = ValueBool $ a > b
 esm (ValueInt a) (ValueInt b) = ValueBool $ a <= b
+esm (ValueDouble a) (ValueDouble b) = ValueBool $ a <= b
 egr (ValueInt a) (ValueInt b) = ValueBool $ a >= b
+egr (ValueDouble a) (ValueDouble b) = ValueBool $ a >= b
 instance Num Value where
   (ValueInt a) + (ValueInt b) = ValueInt $ a + b
+  (ValueDouble a) + (ValueDouble b) = ValueDouble $ a + b
+  (ValueInt a) - (ValueInt b) = ValueInt $ a - b
+  (ValueDouble a) - (ValueDouble b) = ValueDouble $ a - b
+  (ValueInt 0) - (ValueDouble b) = ValueDouble $ - b
   (ValueInt a) * (ValueInt b) = ValueInt $ a * b
+  (ValueDouble a) * (ValueDouble b) = ValueDouble $ a * b
   fromInteger a = ValueInt a
   abs (ValueInt a) = ValueInt $ abs a
+  abs (ValueDouble a) = ValueDouble $ abs a
   signum (ValueInt a) = ValueInt $ signum a
+  signum (ValueDouble a) = ValueDouble $ signum a
 
+fst_ (a, _, _) = a
+snd_ (_, a, _) = a
+thr_ (_, _, a) = a
 
 getOutput :: Env -> String
 getOutput (Env _ _ _ _ output) = join $ reverse output
@@ -40,7 +54,7 @@ getSource (Env _ source _ _ _) = source
 
 getFuncArgs :: Func -> [String]
 getFuncArgs f = case f of 
-                  FuncDecl _ _ arg _ -> Prelude.map (\x -> case x of ArgDecl (Ident a) _ -> a) arg
+                  FuncDecl _ _ arg _ -> Prelude.map (\x -> case x of ArgDecl _ (Ident a) -> a) arg
 
 fresh :: Env -> Env
 fresh (Env l s f v o) = Env l s (f+1) v o
@@ -52,17 +66,30 @@ setVal :: String -> Value -> Res Value
 setVal name val =
   do
     (Env l s f v output) <- get
-    let loc =
-            if (member name l)
-              then insert name ((f+1):(l ! name)) l
-              else insert name [(f+1)] empty     
+    if (member name l) then 
+        do
+          let values = insert (head $ l ! name) val v
+          put $ Env l s f values output
+          return val
+      else
+        throwError $ "Error during setting variable " ++ name ++ " this variable is not initialized"
+
+initVal :: String -> Value -> Res Value
+initVal name val =
+  do
+    (Env l s f v output) <- get
     let values = insert (f+1) val v
-    put $ Env loc s (f+1) values output
+    put $ Env (insert name [(f+1)] l) s (f+1) values output
     return val
 
-delVal :: String -> Env -> Env
+delVal :: String -> Env -> Res Value
 delVal name (Env l s f v o) =
-  Env (insert name (tail (l ! name)) l) s f v o
+  if ((member name l) && (Prelude.null (l ! name)) == False) then  
+      do
+        put $ Env (insert name (tail (l ! name)) l) s f v o
+        return ValueVoid
+    else
+      throwError $ "Error removing from stack variable " ++ name ++ " stack is empty"
 
 
 simExp :: (Value -> Value -> Value) -> Exp -> Exp -> Res Value
@@ -87,20 +114,42 @@ expRes e =
         if (member a loc)
           then return $ values ! (head (loc ! a))
           else 
-            --error "Cant find variable " ++ show a
-            return ValueVoid
+            throwError $ "Cant find variable " ++ show a
       EInt i -> return $ ValueInt i
+      EDouble i -> return $ ValueDouble i
       EStr s -> return $ ValueString s
       ETrue -> return $ ValueBool True
       EFalse -> return $ ValueBool False 
       EEq a b -> simExp (\x y -> ValueBool (x == y))  a b
+      ENEq a b -> simExp (\x y -> ValueBool (x /= y))  a b
       ESm a b -> simExp sm a b 
       EGr a b -> simExp gr a b 
       EESm a b -> simExp esm a b 
       EEGr a b -> simExp egr a b 
       EAdd a b -> simExp (+) a b
+      ENot a -> do; ValueBool v <- expRes a;return $ ValueBool $ not v
+      EAnd a b -> 
+        do
+          ValueBool v1 <- expRes a
+          if (v1 == False) then
+              do;return $ ValueBool False
+            else
+              do
+                ValueBool v2 <- expRes b
+                if (v2 == False) then do;return $ ValueBool False; else do;return $ ValueBool True
+      EOr a b -> 
+        do
+          ValueBool v1 <- expRes a
+          if (v1 == True) then
+              do;return $ ValueBool True
+            else
+              do
+                ValueBool v2 <- expRes b
+                if (v2 == True) then do;return $ ValueBool True; else do;return $ ValueBool False
+      ESub a b -> simExp (-) a b
       EMul a b -> simExp (*) a b
       EMinus a -> simExp (-) (EInt 0) a
+      EPlus a -> expRes a
       EToInt a -> 
         do
           v1 <- expRes a
@@ -109,15 +158,14 @@ expRes e =
                               then return $ ValueInt 1
                               else return $ ValueInt 0
       ECall (Ident a) args -> 
---        let (env3, arg) = foldl (\a f -> let (res, env2) = (fst a) >>= runState (expRes f) (fst a) in (env2, res:snd a) ) (env, []) args
         do
-          return []
-          env <- get
-          foldl (\a f -> do; ) env args
---          let (Right env_) = env
---          let (env3, arg) = foldl (\a f -> let (res, env2) = runState (expRes f) (fst a) in (env2, res:snd a) ) (env, []) args
---          put env3
-          call a arg
+          let (env3, arg, error) = foldl (\a f -> 
+                              case (runState (runErrorT (expRes f)) (fst_ a)) of 
+                                (Right res, env2) -> (env2, res:(snd_ a), thr_ a) 
+                                (Left error, env2) -> (env2, [], error ++ " " ++ (thr_ a))
+                            ) (env, [], "") args
+          if (error == "") then do;put env3;call a arg; else throwError error
+ 
 
 block :: [Instr] -> Res Value
 block [] = 
@@ -130,8 +178,8 @@ block (t:h) =
     case t of 
       IBlock instr -> do; block instr; block h
       IDecl _ [] -> block h
-      IDecl ty ((Ident id):t) -> do; (setVal id (ValueInt 0)); block ((IDecl ty t):h)
-      IDeclSt _ (Ident id) exp -> do; v <- expRes exp;setVal id v; block h
+      IDecl ty ((IdentEmpty (Ident id)):t) -> do; (initVal id (ValueInt 0)); block ((IDecl ty t):h)
+      IDecl ty ((IdentExp (Ident id) exp):t) -> do; v <- expRes exp;(initVal id v); block ((IDecl ty t):h)
       IIf exp instr ->
         do 
           ValueBool a <- expRes exp
@@ -164,7 +212,8 @@ printValue (h:t) =
       ValueInt h -> printString (show h)
       ValueDouble h -> printString (show h)
       ValueBool h -> printString (show h)
-      ValueString h -> printString (show h)
+      ValueString h -> printString h
+      ValueVoid -> throwError $ "can't printout ValueVoid " ++ (show h)
     printValue t
 
 call :: String -> [Value] -> Res Value
@@ -176,15 +225,20 @@ call funcId args =
     "printBool" -> printValue args
     _ -> 
       do
-        env <- get     
-        let func = (getSource env) ! funcId
-        let (FuncDecl _ _ _ (IBlock instr)) = func
-        let funcArgs = getFuncArgs func
-        let val = zip args funcArgs
-        let env2 = foldl (\a f -> let (v, name) = f in setVal name v a) env val   
-        let (val, env3) = runState (block instr) env2 
-        put $ foldl (\a name -> delVal name a) env3 funcArgs    
-        return val
+        env <- get    
+        if (member funcId (getSource env)) then
+            do
+              let func = (getSource env) ! funcId
+              let (FuncDecl _ _ _ (IBlock instr)) = func
+              let funcArgs = getFuncArgs func
+              let val = zip args funcArgs
+              let env2 = foldl (\a f -> let (v, name) = f in snd (runState (runErrorT (initVal name v)) a)) env val   
+              let res = runState (runErrorT (block instr)) env2
+              case res of
+                (Right val, env3) -> do;put $ foldl (\a name -> snd (runState (runErrorT (delVal name a)) a)) env3 funcArgs;return val
+                (Left err, env3) -> throwError $ err
+          else
+            throwError $ "Function " ++ funcId ++ " doesn't exist" 
 
 interpret :: Prog -> (Either String Value, Env)
 interpret e = 
@@ -195,18 +249,17 @@ interpret e =
                    case f of
                      FuncDecl _ (Ident id) _ _ -> insert id f a
                  ) empty funcs
-  in runErrorT (call "main" []) (Env empty mFuncs 0 empty [])
---type Res = ErrorT String (State Env)
---runErrorT :: ErrorT e m a -> m (Either e a)
+  in 
+  runState (runErrorT (call "main" [])) (Env empty mFuncs 0 empty [])
 
 run :: String -> (String, Integer)
 run s = case pProg (myLexer s) of
     Bad err -> ("Bad" ++ err, -1)
- --   Ok e -> let (ValueInt value, env) = interpret e in ("value :\n" ++ (show value) ++ "\n\nenv :\n" ++ show env ++ "\n", value)
-    Ok e -> let (ValueInt value, env) = interpret e in (getOutput env, value)
+    Ok e -> case interpret e of
+              (Right value, env) -> ("value :\n" ++ (show value) ++ "\n\nenv :\n" ++ show env ++ "\n\noutput:\n" ++ (getOutput env), 0)
+              (Left (error), env) -> ("error :\n" ++ (show error) ++ "\n\nenv :\n" ++ show env ++ "\n", -1)
 
 main = do
-  putStr "aa"
   code <- getContents
   let (out, ret) = run code
   putStr $ out

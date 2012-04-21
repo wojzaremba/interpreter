@@ -78,24 +78,20 @@ instance Print Double where
 
 instance Print Ident where
   prt _ (Ident i) = doc (showString i)
-  prtList es = case es of
-   [] -> (concatD [])
-   [x] -> (concatD [prt 0 x])
-   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
 
 
 
 instance Print Type where
   prt i e = case e of
    Int  -> prPrec i 0 (concatD [doc (showString "int")])
-   Bool  -> prPrec i 0 (concatD [doc (showString "bool")])
+   Bool  -> prPrec i 0 (concatD [doc (showString "boolean")])
    Double  -> prPrec i 0 (concatD [doc (showString "double")])
    Void  -> prPrec i 0 (concatD [doc (showString "void")])
 
 
 instance Print Arg where
   prt i e = case e of
-   ArgDecl id type' -> prPrec i 0 (concatD [prt 0 id , doc (showString ":") , prt 0 type'])
+   ArgDecl type' id -> prPrec i 0 (concatD [prt 0 type' , prt 0 id])
 
   prtList es = case es of
    [] -> (concatD [])
@@ -119,8 +115,7 @@ instance Print Func where
 instance Print Instr where
   prt i e = case e of
    IBlock instrs -> prPrec i 0 (concatD [doc (showString "{") , prt 0 instrs , doc (showString "}")])
-   IDeclSt type' id exp -> prPrec i 0 (concatD [prt 0 type' , prt 0 id , doc (showString "=") , prt 0 exp , doc (showString ";")])
-   IDecl type' ids -> prPrec i 0 (concatD [prt 0 type' , prt 0 ids , doc (showString ";")])
+   IDecl type' identexps -> prPrec i 0 (concatD [prt 0 type' , prt 0 identexps , doc (showString ";")])
    IRet exp -> prPrec i 0 (concatD [doc (showString "return") , prt 0 exp , doc (showString ";")])
    IRetEmpty  -> prPrec i 0 (concatD [doc (showString "return") , doc (showString ";")])
    IExp exp -> prPrec i 0 (concatD [prt 0 exp , doc (showString ";")])
@@ -132,6 +127,16 @@ instance Print Instr where
    [] -> (concatD [])
    [x] -> (concatD [prt 0 x])
    x:xs -> (concatD [prt 0 x , prt 0 xs])
+
+instance Print IdentExp where
+  prt i e = case e of
+   IdentEmpty id -> prPrec i 0 (concatD [prt 0 id])
+   IdentExp id exp -> prPrec i 0 (concatD [prt 0 id , doc (showString "=") , prt 0 exp])
+
+  prtList es = case es of
+   [] -> (concatD [])
+   [x] -> (concatD [prt 0 x])
+   x:xs -> (concatD [prt 0 x , doc (showString ",") , prt 0 xs])
 
 instance Print Exp where
   prt i e = case e of

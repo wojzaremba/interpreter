@@ -11,7 +11,7 @@ data Type =
   deriving (Eq,Ord,Show)
 
 data Arg =
-   ArgDecl Ident Type
+   ArgDecl Type Ident
   deriving (Eq,Ord,Show)
 
 data Prog =
@@ -24,14 +24,18 @@ data Func =
 
 data Instr =
    IBlock [Instr]
- | IDeclSt Type Ident Exp
- | IDecl Type [Ident]
+ | IDecl Type [IdentExp]
  | IRet Exp
  | IRetEmpty
  | IExp Exp
  | IIf Exp Instr
  | IIfElse Exp Instr Instr
  | IWhile Exp Instr
+  deriving (Eq,Ord,Show)
+
+data IdentExp =
+   IdentEmpty Ident
+ | IdentExp Ident Exp
   deriving (Eq,Ord,Show)
 
 data Exp =

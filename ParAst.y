@@ -14,7 +14,6 @@ import ErrM
 
 %token 
  ',' { PT _ (TS ",") }
- ':' { PT _ (TS ":") }
  '(' { PT _ (TS "(") }
  ')' { PT _ (TS ")") }
  '{' { PT _ (TS "{") }
@@ -35,7 +34,7 @@ import ErrM
  '/' { PT _ (TS "/") }
  '%' { PT _ (TS "%") }
  '!' { PT _ (TS "!") }
- 'bool' { PT _ (TS "bool") }
+ 'boolean' { PT _ (TS "boolean") }
  'double' { PT _ (TS "double") }
  'else' { PT _ (TS "else") }
  'false' { PT _ (TS "false") }
@@ -62,15 +61,15 @@ String  :: { String }  : L_quoted { $1 }
 
 Type :: { Type }
 Type : 'int' { Int } 
-  | 'bool' { Bool }
+  | 'boolean' { Bool }
   | 'double' { Double }
   | 'void' { Void }
 
 
-ListIdent :: { [Ident] }
-ListIdent : {- empty -} { [] } 
-  | Ident { (:[]) $1 }
-  | Ident ',' ListIdent { (:) $1 $3 }
+ListIdentExp :: { [IdentExp] }
+ListIdentExp : {- empty -} { [] } 
+  | IdentExp { (:[]) $1 }
+  | IdentExp ',' ListIdentExp { (:) $1 $3 }
 
 
 ListFunc :: { [Func] }
@@ -92,7 +91,7 @@ ListArg : {- empty -} { [] }
 
 
 Arg :: { Arg }
-Arg : Ident ':' Type { ArgDecl $1 $3 } 
+Arg : Type Ident { ArgDecl $1 $2 } 
 
 
 ListExp :: { [Exp] }
@@ -111,14 +110,18 @@ Func : Type Ident '(' ListArg ')' Instr { FuncDecl $1 $2 $4 $6 }
 
 Instr :: { Instr }
 Instr : '{' ListInstr '}' { IBlock $2 } 
-  | Type Ident '=' Exp ';' { IDeclSt $1 $2 $4 }
-  | Type ListIdent ';' { IDecl $1 $2 }
+  | Type ListIdentExp ';' { IDecl $1 $2 }
   | 'return' Exp ';' { IRet $2 }
   | 'return' ';' { IRetEmpty }
   | Exp ';' { IExp $1 }
   | 'if' '(' Exp ')' Instr { IIf $3 $5 }
   | 'if' '(' Exp ')' Instr 'else' Instr { IIfElse $3 $5 $7 }
   | 'while' '(' Exp ')' Instr { IWhile $3 $5 }
+
+
+IdentExp :: { IdentExp }
+IdentExp : Ident { IdentEmpty $1 } 
+  | Ident '=' Exp { IdentExp $1 $3 }
 
 
 Exp :: { Exp }

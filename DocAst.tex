@@ -51,7 +51,7 @@ The set of reserved words is the set of terminals appearing in the grammar. Thos
 The reserved words used in Ast are the following: \\
 
 \begin{tabular}{lll}
-{\reserved{bool}} &{\reserved{double}} &{\reserved{else}} \\
+{\reserved{boolean}} &{\reserved{double}} &{\reserved{else}} \\
 {\reserved{false}} &{\reserved{if}} &{\reserved{int}} \\
 {\reserved{return}} &{\reserved{true}} &{\reserved{void}} \\
 {\reserved{while}} & & \\
@@ -60,18 +60,17 @@ The reserved words used in Ast are the following: \\
 The symbols used in Ast are the following: \\
 
 \begin{tabular}{lll}
-{\symb{,}} &{\symb{:}} &{\symb{(}} \\
-{\symb{)}} &{\symb{\{}} &{\symb{\}}} \\
-{\symb{{$=$}}} &{\symb{;}} &{\symb{{$|$}{$|$}}} \\
-{\symb{\&\&}} &{\symb{{$=$}{$=$}}} &{\symb{!{$=$}}} \\
-{\symb{{$<$}}} &{\symb{{$>$}}} &{\symb{{$<$}{$=$}}} \\
-{\symb{{$>$}{$=$}}} &{\symb{{$+$}}} &{\symb{{$-$}}} \\
-{\symb{*}} &{\symb{/}} &{\symb{\%}} \\
-{\symb{!}} & & \\
+{\symb{,}} &{\symb{(}} &{\symb{)}} \\
+{\symb{\{}} &{\symb{\}}} &{\symb{{$=$}}} \\
+{\symb{;}} &{\symb{{$|$}{$|$}}} &{\symb{\&\&}} \\
+{\symb{{$=$}{$=$}}} &{\symb{!{$=$}}} &{\symb{{$<$}}} \\
+{\symb{{$>$}}} &{\symb{{$<$}{$=$}}} &{\symb{{$>$}{$=$}}} \\
+{\symb{{$+$}}} &{\symb{{$-$}}} &{\symb{*}} \\
+{\symb{/}} &{\symb{\%}} &{\symb{!}} \\
 \end{tabular}\\
 
 \subsection*{Comments}
-Single-line comments begin with {\symb{//}}. \\Multiple-line comments are  enclosed with {\symb{/*}} and {\symb{*/}}.
+Single-line comments begin with {\symb{//}}, {\symb{\#}}. \\Multiple-line comments are  enclosed with {\symb{/*}} and {\symb{*/}}.
 
 \section*{The syntactic structure of Ast}
 Non-terminals are enclosed between $\langle$ and $\rangle$. 
@@ -81,15 +80,15 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{Type}} & {\arrow}  &{\terminal{int}}  \\
- & {\delimit}  &{\terminal{bool}}  \\
+ & {\delimit}  &{\terminal{boolean}}  \\
  & {\delimit}  &{\terminal{double}}  \\
  & {\delimit}  &{\terminal{void}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{ListIdent}} & {\arrow}  &{\emptyP} \\
- & {\delimit}  &{\nonterminal{Ident}}  \\
- & {\delimit}  &{\nonterminal{Ident}} {\terminal{,}} {\nonterminal{ListIdent}}  \\
+{\nonterminal{ListIdentExp}} & {\arrow}  &{\emptyP} \\
+ & {\delimit}  &{\nonterminal{IdentExp}}  \\
+ & {\delimit}  &{\nonterminal{IdentExp}} {\terminal{,}} {\nonterminal{ListIdentExp}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -111,7 +110,7 @@ All other symbols are terminals.\\
 \end{tabular}\\
 
 \begin{tabular}{lll}
-{\nonterminal{Arg}} & {\arrow}  &{\nonterminal{Ident}} {\terminal{:}} {\nonterminal{Type}}  \\
+{\nonterminal{Arg}} & {\arrow}  &{\nonterminal{Type}} {\nonterminal{Ident}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}
@@ -130,14 +129,18 @@ All other symbols are terminals.\\
 
 \begin{tabular}{lll}
 {\nonterminal{Instr}} & {\arrow}  &{\terminal{\{}} {\nonterminal{ListInstr}} {\terminal{\}}}  \\
- & {\delimit}  &{\nonterminal{Type}} {\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{Exp}} {\terminal{;}}  \\
- & {\delimit}  &{\nonterminal{Type}} {\nonterminal{ListIdent}} {\terminal{;}}  \\
+ & {\delimit}  &{\nonterminal{Type}} {\nonterminal{ListIdentExp}} {\terminal{;}}  \\
  & {\delimit}  &{\terminal{return}} {\nonterminal{Exp}} {\terminal{;}}  \\
  & {\delimit}  &{\terminal{return}} {\terminal{;}}  \\
  & {\delimit}  &{\nonterminal{Exp}} {\terminal{;}}  \\
  & {\delimit}  &{\terminal{if}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}}  \\
  & {\delimit}  &{\terminal{if}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}} {\terminal{else}} {\nonterminal{Instr}}  \\
  & {\delimit}  &{\terminal{while}} {\terminal{(}} {\nonterminal{Exp}} {\terminal{)}} {\nonterminal{Instr}}  \\
+\end{tabular}\\
+
+\begin{tabular}{lll}
+{\nonterminal{IdentExp}} & {\arrow}  &{\nonterminal{Ident}}  \\
+ & {\delimit}  &{\nonterminal{Ident}} {\terminal{{$=$}}} {\nonterminal{Exp}}  \\
 \end{tabular}\\
 
 \begin{tabular}{lll}

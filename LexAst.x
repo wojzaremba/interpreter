@@ -16,10 +16,11 @@ $i = [$l $d _ ']          -- identifier character
 $u = [\0-\255]          -- universal: any character
 
 @rsyms =    -- reserved words consisting of special symbols
-   \, | \: | \( | \) | \{ | \} | \= | \; | \| \| | \& \& | \= \= | \! \= | \< | \> | \< \= | \> \= | \+ | \- | \* | \/ | \% | \!
+   \, | \( | \) | \{ | \} | \= | \; | \| \| | \& \& | \= \= | \! \= | \< | \> | \< \= | \> \= | \+ | \- | \* | \/ | \% | \!
 
 :-
 "//" [.]* ; -- Toss single line comments
+"#" [.]* ; -- Toss single line comments
 "/*" ([$u # \*] | \* [$u # \/])* ("*")+ "/" ; 
 
 $white+ ;
@@ -79,7 +80,7 @@ eitherResIdent tv s = treeFind resWords
                               | s > a  = treeFind right
                               | s == a = t
 
-resWords = b "int" (b "else" (b "double" (b "bool" N N) N) (b "if" (b "false" N N) N)) (b "void" (b "true" (b "return" N N) N) (b "while" N N))
+resWords = b "int" (b "else" (b "double" (b "boolean" N N) N) (b "if" (b "false" N N) N)) (b "void" (b "true" (b "return" N N) N) (b "while" N N))
    where b s = B s (TS s)
 
 unescapeInitTail :: String -> String

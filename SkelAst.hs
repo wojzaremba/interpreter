@@ -24,7 +24,7 @@ transType x = case x of
 
 transArg :: Arg -> Result
 transArg x = case x of
-  ArgDecl id type'  -> failure x
+  ArgDecl type' id  -> failure x
 
 
 transProg :: Prog -> Result
@@ -40,14 +40,19 @@ transFunc x = case x of
 transInstr :: Instr -> Result
 transInstr x = case x of
   IBlock instrs  -> failure x
-  IDeclSt type' id exp  -> failure x
-  IDecl type' ids  -> failure x
+  IDecl type' identexps  -> failure x
   IRet exp  -> failure x
   IRetEmpty  -> failure x
   IExp exp  -> failure x
   IIf exp instr  -> failure x
   IIfElse exp instr0 instr  -> failure x
   IWhile exp instr  -> failure x
+
+
+transIdentExp :: IdentExp -> Result
+transIdentExp x = case x of
+  IdentEmpty id  -> failure x
+  IdentExp id exp  -> failure x
 
 
 transExp :: Exp -> Result
